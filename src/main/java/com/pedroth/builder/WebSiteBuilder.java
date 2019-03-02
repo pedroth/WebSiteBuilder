@@ -4,6 +4,7 @@ import com.pedroth.utils.FilesCrawler;
 import com.pedroth.utils.TextIO;
 import com.pedroth.utils.Tokenizer;
 import com.pedroth.utils.Zipper;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -12,6 +13,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.function.Function;
 
+@Slf4j
 public class WebSiteBuilder {
     private final static String base = "C:/pedro/";
     private final static String jarBuildingAddress = base + "visualExperiments/tools/JarsBuilding/";
@@ -33,14 +35,11 @@ public class WebSiteBuilder {
             for (String line : text.split("\n")) {
                 final String[] split = line.split(" ");
                 List<String> list = new ArrayList<>(split.length - 1);
-                for (int i = 1; i < split.length; i++) {
-                    list.add(split[i]);
-                }
+                list.addAll(Arrays.asList(split).subList(1, split.length));
                 jarConfig.put(split[0], list);
             }
-
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -104,65 +103,61 @@ public class WebSiteBuilder {
         fillPage(name, path, x -> "\n\n<h1>" + x + "</h1>\n", x -> "");
     }
 
-    private static void buildPages(String path, WebSiteBuilder.PageBuilder pageBuilder) {
+    private static void buildPages(String path, WebSiteBuilder.PageBuilder pageBuilder) throws IOException {
         String[] directories = FilesCrawler.getDirs(path);
-
         for (String directory : directories) {
-            try {
-                pageBuilder.build(directory, path + "/" + directory);
-            } catch (Exception e) {
-                System.out.println("Unknown error : " + e.getMessage());
-            }
-            System.out.println(directory);
+            pageBuilder.build(directory, path + "/" + directory);
+            log.info(directory);
         }
-        System.out.println(Arrays.toString(directories));
+        log.info(Arrays.toString(directories));
     }
 
-    private static void buildPage(String templateAddress, String contentAddress, String outputAddress) {
+    private static void buildPage(String contentAddress, String outputAddress) throws IOException {
         String regex = "<!--Special-->";
         StringBuilder text = new StringBuilder();
-        try {
-            Tokenizer parser = Tokenizer.of(regex);
-            String content = new Scanner(new File(contentAddress)).useDelimiter("\\Z").next();
-            BufferedReader reader = new BufferedReader(new FileReader(templateAddress));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(outputAddress));
+        Tokenizer parser = Tokenizer.of(regex);
+        String content = new Scanner(new File(contentAddress)).useDelimiter("\\Z").next();
+        BufferedReader reader = new BufferedReader(new FileReader(WebSiteBuilder.canonAddress));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputAddress));
 
-            text.append(content);
+        text.append(content);
 
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] aux = parser.tokenize(line);
-                System.out.println(line);
-                if (aux.length == 0) {
-                    writer.write(line + "\n");
-                } else {
-                    writer.write(text + "\n");
-                }
+        String line;
+        while ((line = reader.readLine()) != null) {
+            String[] aux = parser.tokenize(line);
+            log.info(line);
+            if (aux.length == 0) {
+                writer.write(line + "\n");
+            } else {
+                writer.write(text + "\n");
             }
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        writer.close();
+        reader.close();
     }
 
-    private static void BuildWeb() {
+    private static void BuildWeb() throws IOException {
         String pathJava = base + "visualExperiments/JavaExperiments";
         String pathJs = base + "visualExperiments/JsExperiments";
         String pathBlog = base + "visualExperiments/Blog";
 
-        buildPage(canonAddress, commentsAddress, canonWithCommentsAddress);
-        buildPage(canonAddress, mainAddress, indexAddress);
-        buildPage(canonAddress, javaExperimentsAddress + "App.html", javaExperimentsAddress + ".html");
-        buildPage(canonAddress, jsExperimentsAddress + "App.html", jsExperimentsAddress + ".html");
-        buildPage(canonAddress, blogAddress + "App.html", blogAddress + ".html");
+        buildPage(commentsAddress, canonWithCommentsAddress);
+        buildPage(mainAddress, indexAddress);
+        buildPage(javaExperimentsAddress + "App.html", javaExperimentsAddress + ".html");
+        buildPage(jsExperimentsAddress + "App.html", jsExperimentsAddress + ".html");
+        buildPage(blogAddress + "App.html", blogAddress + ".html");
         buildPages(pathJava, WebSiteBuilder::buildJavaPage);
         buildPages(pathJs, WebSiteBuilder::buildJsPage);
         buildPages(pathBlog, WebSiteBuilder::buildJsPage);
     }
 
 
-    public static void main(String[] args) throws IOException {
-        BuildWeb();
+    public static void main(String[] args) {
+        try {
+            BuildWeb();
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
     }
 
     interface PageBuilder {
