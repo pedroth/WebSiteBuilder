@@ -16,7 +16,7 @@ import java.util.function.Function;
 @Slf4j
 public class WebSiteBuilder {
     private final static String base = "C:/pedro/";
-    private final static String jarBuildingAddress = base + "visualExperiments/tools/JarsBuilding/";
+    private final static String jarBuildingAddress = base + "visualExperiments/tools/BuildingJars/";
     private final static String canonAddress = base + "visualExperiments/tools/canon.html";
     private final static String canonWithCommentsAddress = base + "visualExperiments/tools/canonWithComments.html";
     private final static String commentsAddress = base + "visualExperiments/tools/comments.html";
@@ -44,7 +44,7 @@ public class WebSiteBuilder {
     }
 
 
-    public static void buildJavaPage(String name, String path) throws IOException {
+    private static void buildJavaPage(String name, String path) throws IOException {
         fillPage(name, path, x -> "\n\n<h1>" + x + "</h1>\n", x -> "</br></br></br><p>Download app here :<a href='" + name + ".zip'>" + name + ".zip</a></p>");
         // add Java zip
         // create folder
@@ -99,7 +99,7 @@ public class WebSiteBuilder {
         }
     }
 
-    public static void buildJsPage(String name, String path) {
+    private static void buildJsPage(String name, String path) {
         fillPage(name, path, x -> "\n\n<h1>" + x + "</h1>\n", x -> "");
     }
 

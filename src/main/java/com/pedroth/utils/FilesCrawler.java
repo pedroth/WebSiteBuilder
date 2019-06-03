@@ -27,9 +27,7 @@ public final class FilesCrawler {
                 filePathByFileName.put(f.getAbsolutePath(), f.getName());
             } else if (f.isDirectory()) {
                 File[] files = f.listFiles();
-                for (File file : files) {
-                    stack.add(file);
-                }
+                Collections.addAll(stack, files);
             }
         }
         return filePathByFileName;
