@@ -4,6 +4,7 @@ import com.pedroth.utils.FilesCrawler;
 import com.pedroth.utils.TextIO;
 import com.pedroth.utils.Tokenizer;
 import com.pedroth.utils.Zipper;
+import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.*;
@@ -15,16 +16,17 @@ import java.util.function.Function;
 
 @Slf4j
 public class WebSiteBuilder {
-    private final static String base = "C:/pedro/";
-    private final static String jarBuildingAddress = base + "visualExperiments/tools/JarsBuilding/";
-    private final static String canonAddress = base + "visualExperiments/tools/canon.html";
-    private final static String canonWithCommentsAddress = base + "visualExperiments/tools/canonWithComments.html";
-    private final static String commentsAddress = base + "visualExperiments/tools/comments.html";
-    private final static String mainAddress = base + "visualExperiments/main.html";
-    private final static String indexAddress = base + "visualExperiments/index.html";
-    private final static String javaExperimentsAddress = base + "visualExperiments/JavaExperiments/JavaExperiments";
-    private final static String jsExperimentsAddress = base + "visualExperiments/JsExperiments/JsExperiments";
-    private final static String blogAddress = base + "visualExperiments/Blog/Blog";
+    // Update for each usage
+    private final static String base = "/";
+    private final static String jarBuildingAddress = base + "tools/JarsBuilding/";
+    private final static String canonAddress = base + "tools/canon.html";
+    private final static String canonWithCommentsAddress = base + "tools/canonWithComments.html";
+    private final static String commentsAddress = base + "tools/comments.html";
+    private final static String mainAddress = base + "main.html";
+    private final static String indexAddress = base + "index.html";
+    private final static String javaExperimentsAddress = base + "JavaExperiments/JavaExperiments";
+    private final static String jsExperimentsAddress = base + "JsExperiments/JsExperiments";
+    private final static String blogAddress = base + "Blog/Blog";
     private final static Map<String, List<String>> jarConfig = new HashMap<>();
 
     static {
@@ -137,9 +139,9 @@ public class WebSiteBuilder {
     }
 
     private static void BuildWeb() throws IOException {
-        String pathJava = base + "visualExperiments/JavaExperiments";
-        String pathJs = base + "visualExperiments/JsExperiments";
-        String pathBlog = base + "visualExperiments/Blog";
+        String pathJava = base + "JavaExperiments";
+        String pathJs = base + "JsExperiments";
+        String pathBlog = base + "Blog";
 
         buildPage(commentsAddress, canonWithCommentsAddress);
         buildPage(mainAddress, indexAddress);
